@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Receipt Style Billing System - India (Small Receipt)</title>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 10px;
+    }
+    .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+    .header {
+        background: linear-gradient(45deg, #2c3e50, #34495e);
+        color: white;
+        padding: 20px;
+        text-align: center;
+    }
+    .header h1 {
+        font-size: 2.5rem;
+        margin-bottom: 5px;
+        font-weight: 300;
+    }
+    .main-content {
+        display: grid;
+        grid-template-columns: 1fr 400px;
+        gap: 20px;
+        padding: 30px;
+    }
+    .billing-form {
+        background: #f8f9fa;
+        padding: 25px;
+        border-radius: 12px;
+        border: 1px solid #e9ecef;
+    }
+    .form-section {
+        margin-bottom: 25px;
+    }
+    .form-section h3 {
+        color: #2c3e50;
+        margin-bottom: 15px;
+        font-size: 1.3rem;
+        border-bottom: 2px solid #3498db;
+        padding-bottom: 5px;
+    }
+    .form-group {
+        margin-bottom: 15px;
+    }
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+    }
+    .form-row-3 {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 15px;
+    }
+    label {
+        display: block;
+        margin-bottom: 5px;
+        color: #555;
+        font-weight: 500;
+    }
+    input,
+    select {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #e1e8ed;
+        border-radius: 8px;
+        font-size: 16px;
+        transition: all 0.3s ease;
+    }
+    input:focus,
+    select:focus {
+        outline: none;
+        border-color: #3498db;
+        box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+    }
+    .btn {
+        background: linear-gradient(45deg, #3498db, #2980b9);
+        color: white;
+        padding: 12px 25px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        margin-right: 10px;
+        margin-bottom: 10px;
+    }
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+    }
+    .btn-success {
+        background: linear-gradient(45deg, #27ae60, #2ecc71);
+    }
+    .btn-danger {
+        background: linear-gradient(45deg, #e74c3c, #c0392b);
+    }
+    .btn-warning {
+        background: linear-gradient(45deg, #f39c12, #e67e22);
+    }
+    .btn-small {
+        padding: 8px 15px;
+        font-size: 14px;
+    }
+    /* Receipt Style - Small Size Adaptation */
+    .receipt-preview {
+        width: 200px; /* ~2 inches */
+        max-width: 200px;
+        border: none;
+        padding: 0;
+        margin: 0 auto;
+        box-shadow: none;
+        font-size: 11px;
+        line-height: 1.2;
+        position: sticky;
+        top: 20px;
+        height: fit-content;
+        background: white;
+        border-radius: 12px;
+        overflow: visible;
+        border: 2px solid #ddd;
+    }
+    .receipt-content {
+        padding: 10px;
+        font-family: 'Courier New', monospace;
+        font-size: 11px;
+        line-height: 1.2;
+        box-shadow: none;
+        position: relative;
+    }
+    .receipt-content::before,
+    .receipt-content::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        right: 0;
+        height: 15px;
+        background-image: radial-gradient(circle at 10px 50%, transparent 5px, #f9f9f9 5px);
+        background-size: 20px 100%;
+        background-repeat: repeat-x;
+    }
+    .receipt-content::before {
+        top: -7px;
+    }
+    .receipt-content::after {
+        bottom: -7px;
+    }
+    .receipt-header {
+        text-align: center;
+        margin-bottom: 10px;
+    }
+    .business-name {
+        font-size: 14px;
+        font-weight: bold;
+        margin-bottom: 2px;
+    }
+    .business-address {
+        font-size: 9px;
+        margin-bottom: 1px;
+    }
+    .dotted-line {
+        border-top: 1px dotted #666; /* thinner border */
+        margin: 8px 0;
+    }
+    .receipt-items {
+        margin-bottom: 10px;
+    }
+    .item-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 2px;
+        font-size: 11px;
+    }
+    .item-name {
+        flex: 1;
+        text-align: left;
+    }
+    .item-price {
+        text-align: right;
+        min-width: 80px;
+    }
+    .receipt-totals {
+        border-top: 1px solid #666;
+        padding-top: 6px;
+        margin-top: 10px;
+    }
+    .total-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 2px;
+        font-size: 11px;
+    }
+    .final-total {
+        border-top: 2px dotted #666;
+        border-bottom: 2px dotted #666;
+        padding: 4px 0;
+        margin: 6px 0;
+        font-weight: bold;
+        font-size: 13px;
+    }
+    .payment-info {
+        margin-top: 10px;
+        font-size: 10px;
+    }
+    .receipt-footer {
+        text-align: center;
+        margin-top: 15px;
+        font-size: 10px;
+    }
+    .print-buttons {
+        padding: 20px;
+        background: #f8f9fa;
+        border-top: 1px solid #e1e8ed;
+        text-align: center;
+    }
+    /* Tables */
+    .items-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+        font-size: 11px;
+    }
+    .items-table th,
+    .items-table td {
+        padding: 6px 5px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+    .items-table th {
+        background: #34495e;
+        color: white;
+        font-weight: 500;
+        font-size: 10px;
+    }
+    .items-table tr:hover {
+        background: #f8f9fa;
+    }
+    .remove-btn {
+        background: #e74c3c;
+        color: white;
+        border: none;
+        padding: 3px 6px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 10px;
+    }
+
+    /* Predefined Items Management */
+    .predefined-items {
+        background: #fff3cd;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        border: 1px solid #ffeaa7;
+    }
+    .predefined-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 10px;
+        margin-top: 15px;
+    }
+    .predefined-item {
+        background: white;
+        padding: 15px;
+        border-radius: 6px;
+        border: 1px solid #ddd;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-align: center;
+    }
+    .predefined-item:hover {
+        background: #f0f8ff;
+        border-color: #3498db;
+        transform: translateY(-2px);
+    }
+    .predefined-item .name {
+        font-weight: bold;
+        color: #2c3e50;
+        margin-bottom: 5px;
+        font-size: 12px;
+    }
+    .predefined-item .price {
+        color: #27ae60;
+        font-size: 16px;
+        font-weight: bold;
+    }
+    .quick-add {
+        background: #e8f5e8;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        border: 1px solid #c3e6c3;
+    }
+    .toast {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: #27ae60;
+        color: white;
+        padding: 15px 20px;
+        border-radius: 8px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        transform: translateX(100%);
+        transition: transform 0.3s ease;
+        z-index: 1000;
+    }
+    .toast.show {
+        transform: translateX(0);
+    }
+    .toast.error {
+        background: #e74c3c;
+    }
+    /* Responsive Design */
+    @media (max-width: 1024px) {
+        .main-content {
+            grid-template-columns: 1fr;
+        }
+
+        .receipt-preview {
+            order: -1;
+        }
+    }
+    @media (max-width: 768px) {
+        .form-row,
+        .form-row-3 {
+            grid-template-columns: 1fr;
+        }
+
+        .predefined-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .container {
+            margin: 5px;
+            border-radius: 10px;
+        }
+    }
+    /* Print Styles: force small receipt size */
+    @media print {
+        body * {
+            visibility: hidden;
+        }
+
+        .receipt-preview,
+        .receipt-preview * {
+            visibility: visible;
+        }
+
+        .receipt-preview {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 200px !important;
+            border: none !important;
+            box-shadow: none !important;
+            padding: 0 !important;
+            margin: 0 auto !important;
+            font-size: 11px !important;
+            line-height: 1.2 !important;
+        }
+
+        .receipt-content {
+            padding: 10px !important;
+            box-shadow: none !important;
+            font-size: 11px !important;
+            line-height: 1.2 !important;
+        }
+
+        .print-buttons {
+            display: none !important;
+        }
+    }
+</style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>Receipt Style Billing System - India (Small Receipt)</h1>
+        <p>Create professional receipts with pre-saved items and GST compliance</p>
+    </div>
+    <div class="main-content">
+        <div class="billing-form">
+            <!-- Business Info -->
+            <div class="form-section">
+                <h3>Business Information</h3>
+                <div class="form-group">
+                    <label for="businessName">Business Name</label>
+                    <input
+                        type="text"
+                        id="businessName"
+                        placeholder="Enter business name"
+                        value="Business Name"
+                    />
+                </div>
+                <div class="form-group">
+                    <label for="businessAddress">Address</label>
+                    <input
+                        type="text"
+                        id="businessAddress"
+                        placeholder="Shop No. 123, Main Market"
+                        value="Shop No. 123, Main Market"
+                    />
+                </div>
+                <div class="form-row">
+                    <div>
+                        <label for="businessCity">City & State</label>
+                        <input
+                            type="text"
+                            id="businessCity"
+                            placeholder="Mumbai, Maharashtra 400001"
+                            value="Mumbai, Maharashtra 400001"
+                        />
+                    </div>
+                    <div>
+                        <label for="businessPhone">Phone</label>
+                        <input
+                            type="text"
+                            id="businessPhone"
+                            placeholder="+91-98765-43210"
+                            value="+91-98765-43210"
+                        />
+                    </div>
+                </div>
+            </div>
+            <!-- Predefined Items Management -->
+            <div class="form-section">
+                <h3>Add New Item to Inventory</h3>
+                <div class="form-row">
+                    <div>
+                        <label for="newItemName">Item Name</label>
+                        <input type="text" id="newItemName" placeholder="Enter item name" />
+                    </div>
+                    <div>
+                        <label for="newItemPrice">Price (₹)</label>
+                        <input type="number" id="newItemPrice" placeholder="0.00" step="0.01" />
+                    </div>
+                </div>
+                <button class="btn btn-success" onclick="addToPredefinedItems()">
+                    Add to Inventory
+                </button>
+                <button class="btn btn-danger" onclick="clearInventory()">
+                    Clear All Items
+                </button>
+            </div>
+            <!-- Quick Add from Predefined Items -->
+            <div class="form-section">
+                <h3>Quick Add Items</h3>
+                <div class="quick-add">
+                    <label for="quickItemSelect">Select Item:</label>
+                    <select id="quickItemSelect" onchange="selectPredefinedItem()">
+                        <option value="">Choose an item...</option>
+                    </select>
+                    <div
+                        style="display: grid; grid-template-columns: 1fr 100px; gap: 10px; margin-top: 10px;"
+                    >
+                        <input
+                            type="number"
+                            id="quickQuantity"
+                            placeholder="Quantity"
+                            min="1"
+                            value="1"
+                        />
+                        <button class="btn btn-success" onclick="addQuickItem()">Add</button>
+                    </div>
+                </div>
+            </div>
+            <!-- Predefined Items Display -->
+            <div class="form-section">
+                <h3>Available Items</h3>
+                <div class="predefined-items">
+                    <div class="predefined-grid" id="predefinedItemsGrid"></div>
+                </div>
+            </div>
+            <!-- Manual Item Entry -->
+            <div class="form-section">
+                <h3>Add Custom Item</h3>
+                <div class="form-row">
+                    <div>
+                        <label for="itemName">Item Name</label>
+                        <input type="text" id="itemName" placeholder="Custom item name" />
+                    </div>
+                    <div>
+                        <label for="itemPrice">Price (₹)</label>
+                        <input type="number" id="itemPrice" placeholder="0.00" step="0.01" />
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div>
+                        <label for="itemQuantity">Quantity</label>
+                        <input type="number" id="itemQuantity" placeholder="1" min="1" value="1" />
+                    </div>
+                    <div style="display: flex; align-items: end;">
+                        <button class="btn" onclick="addCustomItem()">Add Custom Item</button>
+                    </div>
+                </div>
+            </div>
+            <!-- Current Items -->
+            <div class="form-section">
+                <h3>Current Bill Items</h3>
+                <table class="items-table">
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>Qty</th>
+                            <th>Price (₹)</th>
+                            <th>Total (₹)</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="itemsList"></tbody>
+                </table>
+            </div>
+            <!-- Payment Mode -->
+            <div class="form-section">
+                <h3>Payment Details</h3>
+                <div class="form-row">
+                    <div>
+                        <label for="paymentMode">Payment Mode</label>
+                        <select id="paymentMode">
+                            <option value="UPI">UPI (PhonePe/GPay/Paytm)</option>
+                            <option value="Cash">Cash</option>
+                            <option value="Credit">Credit Card</option>
+                            <option value="Debit">Debit Card</option>
+                            <option value="NetBanking">Net Banking</option>
+                            <option value="Cheque">Cheque</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="transactionId">Transaction ID (Optional)</label>
+                        <input type="text" id="transactionId" placeholder="Transaction/Reference ID" />
+                    </div>
+                </div>
+            </div>
+            <!-- Action Buttons -->
+            <div class="form-section">
+                <button class="btn btn-success" onclick="generateReceipt()">Generate Receipt</button>
+                <button class="btn btn-warning" onclick="clearBill()">Clear Bill</button>
+            </div>
+        </div>
+        <!-- Receipt Preview -->
+        <div class="receipt-preview">
+            <div class="receipt-content" id="receiptContent">
+                <div class="receipt-header">
+                    <div class="business-name" id="receiptBusinessName"></div>
+                    <div class="business-address" id="receiptAddress1">Shop No. 123, Main Market</div>
+                    <div class="business-address" id="receiptAddress2"></div>
+                    <div class="business-address" id="receiptCityState">Mumbai, Maharashtra 400001</div>
+                    <div class="business-address" id="receiptPhone">+91-98765-43210</div>
+                </div>
+                <div class="dotted-line"></div>
+                <div class="receipt-items" id="receiptItems"></div>
+                <div class="receipt-totals">
+                    <div class="total-row">
+                        <span>Sub Total</span>
+                        <span id="receiptSubTotal">₹0.00</span>
+                    </div>
+                    <div class="total-row">
+                        <span id="gstLabel">GST (18%)</span>
+                        <span id="receiptTax">₹0.00</span>
+                    </div>
+                    <div class="dotted-line"></div>
+                    <div class="total-row final-total">
+                        <span>TOTAL</span>
+                        <span id="receiptTotal">₹0.00</span>
+                    </div>
+                    <div class="dotted-line"></div>
+                </div>
+                <div class="payment-info">
+                    <div class="total-row">
+                        <span>Paid By:</span>
+                        <span id="receiptPaymentMode">Cash</span>
+                    </div>
+                    <div id="transactionInfo" style="display: none;">
+                        <div class="business-address" id="receiptDateTime"></div>
+                        <div class="business-address">
+                            Transaction ID: <span id="receiptTransactionId"></span>
+                        </div>
+                        <div class="business-address">Vendor ID: 98764-321</div>
+                    </div>
+                </div>
+                <div class="receipt-footer">
+                    <div style="margin-top: 20px;">
+                        Thank You For Supporting<br />
+                        Local Business!
+                    </div>
+                </div>
+            </div>
+            <div class="print-buttons">
+                <button class="btn" onclick="printReceipt()">🖨️ Print Receipt</button>
+                <button class="btn btn-success" onclick="printViaBluetooth()"
+                    >📱 Bluetooth Print</button
+                >
+                <button class="btn btn-warning" onclick="printViaWifi()">📶 WiFi Print</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+    let billItems = [];
+    let predefinedItems = [
+        { name: "Rice (1kg)", price: 85.0 },
+        { name: "Wheat Flour (1kg)", price: 45.0 },
+        { name: "Sugar (1kg)", price: 55.0 },
+        { name: "Cooking Oil (1L)", price: 150.0 },
+        { name: "Tea (250g)", price: 120.0 },
+        { name: "Milk (1L)", price: 65.0 },
+        { name: "Onions (1kg)", price: 35.0 },
+        { name: "Potatoes (1kg)", price: 30.0 },
+    ];
+
+    function formatINR(amount) {
+        return (
+            "₹" +
+            amount.toLocaleString("en-IN", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+            })
+        );
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        updatePredefinedItemsDisplay();
+        updatePredefinedItemsSelect();
+        updateReceiptDateTime();
+    });
+
+    function showToast(message, isError = false) {
+        const toast = document.getElementById("toast");
+        toast.textContent = message;
+        toast.className = `toast ${isError ? "error" : ""} show`;
+        setTimeout(() => {
+            toast.classList.remove("show");
+        }, 3000);
+    }
+
+    function addToPredefinedItems() {
+        const name = document.getElementById("newItemName").value.trim();
+        const price = parseFloat(document.getElementById("newItemPrice").value);
+        if (!name || !price || price <= 0) {
+            showToast("Please enter valid item name and price", true);
+            return;
+        }
+        predefinedItems.push({ name, price });
+        document.getElementById("newItemName").value = "";
+        document.getElementById("newItemPrice").value = "";
+
+        updatePredefinedItemsDisplay();
+        updatePredefinedItemsSelect();
+        showToast("Item added to inventory!");
+    }
+
+    function clearInventory() {
+        if (confirm("Clear all predefined items?")) {
+            predefinedItems = [];
+            updatePredefinedItemsDisplay();
+            updatePredefinedItemsSelect();
+            showToast("Inventory cleared");
+        }
+    }
+
+    function updatePredefinedItemsDisplay() {
+        const grid = document.getElementById("predefinedItemsGrid");
+        grid.innerHTML = "";
+        predefinedItems.forEach((item, index) => {
+            const itemDiv = document.createElement("div");
+            itemDiv.className = "predefined-item";
+            itemDiv.innerHTML = `
+                <div class="name">${item.name}</div>
+                <div class="price">${formatINR(item.price)}</div>
+            `;
+            itemDiv.onclick = () => addPredefinedItemToBill(index);
+            grid.appendChild(itemDiv);
+        });
+    }
+
+    function updatePredefinedItemsSelect() {
+        const select = document.getElementById("quickItemSelect");
+        select.innerHTML = '<option value="">Choose an item...</option>';
+
+        predefinedItems.forEach((item, index) => {
+            const option = document.createElement("option");
+            option.value = index;
+            option.textContent = `${item.name} - ${formatINR(item.price)}`;
+            select.appendChild(option);
+        });
+    }
+
+    function selectPredefinedItem() {
+        const select = document.getElementById("quickItemSelect");
+        if (select.value) {
+            document.getElementById("quickQuantity").focus();
+        }
+    }
+
+    function addQuickItem() {
+        const select = document.getElementById("quickItemSelect");
+        const quantity = parseInt(document.getElementById("quickQuantity").value) || 1;
+
+        if (!select.value) {
+            showToast("Please select an item", true);
+            return;
+        }
+        const itemIndex = parseInt(select.value);
+        const item = predefinedItems[itemIndex];
+
+        addItemToBill(item.name, item.price, quantity);
+
+        select.value = "";
+        document.getElementById("quickQuantity").value = "1";
+    }
+
+    function addPredefinedItemToBill(index) {
+        const item = predefinedItems[index];
+        addItemToBill(item.name, item.price, 1);
+    }
+
+    function addCustomItem() {
+        const name = document.getElementById("itemName").value.trim();
+        const price = parseFloat(document.getElementById("itemPrice").value);
+        const quantity = parseInt(document.getElementById("itemQuantity").value) || 1;
+        if (!name || !price || price <= 0) {
+            showToast("Please enter valid item details", true);
+            return;
+        }
+        addItemToBill(name, price, quantity);
+
+        document.getElementById("itemName").value = "";
+        document.getElementById("itemPrice").value = "";
+        document.getElementById("itemQuantity").value = "1";
+    }
+
+    function addItemToBill(name, price, quantity) {
+        const existingIndex = billItems.findIndex(
+            (item) => item.name === name && item.price === price
+        );
+
+        if (existingIndex !== -1) {
+            billItems[existingIndex].quantity += quantity;
+        } else {
+            billItems.push({
+                id: Date.now(),
+                name,
+                price,
+                quantity,
+            });
+        }
+
+        updateItemsList();
+        showToast(`${name} added to bill!`);
+    }
+
+    function removeItem(id) {
+        billItems = billItems.filter((item) => item.id !== id);
+        updateItemsList();
+        showToast("Item removed");
+    }
+
+    function updateItemsList() {
+        const tbody = document.getElementById("itemsList");
+        tbody.innerHTML = "";
+        billItems.forEach((item) => {
+            const row = tbody.insertRow();
+            const total = item.price * item.quantity;
+            row.innerHTML = `
+                <td>${item.name}</td>
+                <td>${item.quantity}</td>
+                <td>${formatINR(item.price)}</td>
+                <td>${formatINR(total)}</td>
+                <td><button class="remove-btn" onclick="removeItem(${item.id})">Remove</button></td>
+            `;
+        });
+    }
+
+    function generateReceipt() {
+        const businessName =
+            document.getElementById("businessName").value.trim() || "BUSINESS NAME";
+        const businessAddress =
+            document.getElementById("businessAddress").value.trim() ||
+            "Shop No. 123, Main Market";
+        const businessCity =
+            document.getElementById("businessCity").value.trim() || "Mumbai, Maharashtra 400001";
+        const businessPhone =
+            document.getElementById("businessPhone").value.trim() || "+91-98765-43210";
+        const paymentMode = document.getElementById("paymentMode").value;
+        const transactionId = document.getElementById("transactionId").value.trim();
+
+        if (billItems.length === 0) {
+            showToast("Please add at least one item", true);
+            return;
+        }
+
+        // Update receipt header
+        document.getElementById("receiptBusinessName").textContent = businessName;
+        document.getElementById("receiptAddress1").textContent = businessAddress;
+        document.getElementById("receiptAddress2").textContent = "";
+        document.getElementById("receiptCityState").textContent = businessCity;
+        document.getElementById("receiptPhone").textContent = businessPhone;
+
+        // Update items list on receipt
+        const itemsDiv = document.getElementById("receiptItems");
+        itemsDiv.innerHTML = "";
+        let subtotal = 0;
+        billItems.forEach((item) => {
+            const total = item.price * item.quantity;
+            subtotal += total;
+            const itemDiv = document.createElement("div");
+            itemDiv.className = "item-row";
+
+            let itemText = item.name;
+            if (item.quantity > 1) {
+                itemText += ` (${item.quantity})`;
+            }
+
+            itemDiv.innerHTML = `
+                <span class="item-name">${itemText}</span>
+                <span class="item-price">${formatINR(total)}</span>
+            `;
+            itemsDiv.appendChild(itemDiv);
+        });
+
+        // GST 18% calculation
+        const gst = subtotal * 0.18;
+        const grandTotal = subtotal + gst;
+
+        // Update totals on receipt
+        document.getElementById("receiptSubTotal").textContent = formatINR(subtotal);
+        document.getElementById("receiptTax").textContent = formatINR(gst);
+        document.getElementById("receiptTotal").textContent = formatINR(grandTotal);
+        document.getElementById("gstLabel").textContent = "GST (18%)";
+
+        // Payment info
+        document.getElementById("receiptPaymentMode").textContent = paymentMode;
+        if (transactionId && paymentMode !== "Cash") {
+            document.getElementById("transactionInfo").style.display = "block";
+            document.getElementById("receiptTransactionId").textContent = transactionId;
+        } else {
+            document.getElementById("transactionInfo").style.display = "none";
+        }
+
+        updateReceiptDateTime();
+        showToast("Receipt generated successfully!");
+    }
+
+    function updateReceiptDateTime() {
+        const now = new Date();
+        const dateStr = now.toLocaleDateString("en-IN", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+        });
+        const timeStr = now.toLocaleTimeString("en-IN", {
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: false,
+        });
+        document.getElementById("receiptDateTime").textContent = `${dateStr} ${timeStr}`;
+    }
+
+    function printReceipt() {
+        if (billItems.length === 0) {
+            showToast("Please generate a receipt first", true);
+            return;
+        }
+        window.print();
+    }
+
+    function printViaBluetooth() {
+        if (billItems.length === 0) {
+            showToast("Please generate a receipt first", true);
+            return;
+        }
+        if ("bluetooth" in navigator) {
+            showToast("Connecting to Bluetooth printer...");
+            setTimeout(() => {
+                showToast("Bluetooth printing initiated!");
+            }, 1000);
+        } else {
+            showToast("Bluetooth not supported", true);
+            printReceipt();
+        }
+    }
+
+    function printViaWifi() {
+        if (billItems.length === 0) {
+            showToast("Please generate a receipt first", true);
+            return;
+        }
+        showToast("WiFi printing initiated! (Simulated)");
+        setTimeout(() => {
+            window.print();
+        }, 1000);
+    }
+
+    function clearBill() {
+        billItems = [];
+        updateItemsList();
+        document.getElementById("receiptSubTotal").textContent = "₹0.00";
+        document.getElementById("receiptTax").textContent = "₹0.00";
+        document.getElementById("receiptTotal").textContent = "₹0.00";
+        document.getElementById("receiptItems").innerHTML = "";
+        showToast("Bill cleared");
+    }
+</script>
+</body>
+</html>
